@@ -17,19 +17,13 @@
   <body class="bg-stone-900 text-stone-900 antialiased selection:bg-amber-200 selection:text-stone-900">
     <div id="root"></div>
 
-    <!-- Smart loader: Works on GitHub Pages, Vercel, Netlify, and Vite Dev Server -->
-    <script type="module">
-      var isViteDev = window.location.port === '3000' || window.location.hostname.includes('.run.app');
-      if (isViteDev) {
-        import('/src/main.tsx').catch(function(err) {
-          console.warn('Vite dev import failed, loading precompiled bundle:', err);
-          import('./assets/app.js');
-        });
-      } else {
-        // When running on GitHub Pages (static host), load the pre-compiled production app directly
-        import('./assets/app.js');
+    <script>
+      // Fix GitHub Pages path if opened without trailing slash (e.g. username.github.io/repo)
+      if (window.location.hostname.includes('github.io') && !window.location.pathname.endsWith('/') && !window.location.pathname.endsWith('.html')) {
+        window.location.replace(window.location.pathname + '/' + window.location.search + window.location.hash);
       }
     </script>
+    <script type="module" src="./assets/app.js"></script>
   </body>
 </html>
 
