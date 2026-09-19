@@ -12,8 +12,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Anek+Bangla:wght@400;500;600;700;800&family=Hind+Siliguri:wght@400;500;600;700&family=Noto+Serif+Bengali:wght@400;500;600;700;800&family=Tiro+Bangla:ital@0;1&display=swap" rel="stylesheet">
-    <script type="module" crossorigin src="./assets/index-BaNKvaCJ.js"></script>
-    <link rel="stylesheet" crossorigin href="./assets/index-DbVaCF5T.css">
+    <script type="module" crossorigin src="./assets/index-EzmnvqIh.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-zEjwoMCS.css">
   </head>
   <body class="bg-stone-900 text-stone-900 antialiased selection:bg-amber-200 selection:text-stone-900">
     <div id="root"></div>
@@ -23,6 +23,22 @@
       if (window.location.hostname.includes('github.io') && !window.location.pathname.endsWith('/') && !window.location.pathname.endsWith('.html')) {
         window.location.replace(window.location.pathname + '/' + window.location.search + window.location.hash);
       }
+      function loadStaticBundle() {
+        if (window.__bundleLoaded || window.__appLoaded) return;
+        window.__bundleLoaded = true;
+        var s = document.createElement('script');
+        s.type = 'module';
+        s.src = './assets/app.js';
+        document.body.appendChild(s);
+      }
+    </script>
+    <script>
+      // Fallback in case onerror is suppressed on some static hosting CDNs
+      setTimeout(function() {
+        if (!window.__appLoaded && !document.getElementById('invitation-letter')) {
+          loadStaticBundle();
+        }
+      }, 700);
     </script>
   </body>
 </html>

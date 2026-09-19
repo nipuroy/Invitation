@@ -22,8 +22,24 @@
       if (window.location.hostname.includes('github.io') && !window.location.pathname.endsWith('/') && !window.location.pathname.endsWith('.html')) {
         window.location.replace(window.location.pathname + '/' + window.location.search + window.location.hash);
       }
+      function loadStaticBundle() {
+        if (window.__bundleLoaded || window.__appLoaded) return;
+        window.__bundleLoaded = true;
+        var s = document.createElement('script');
+        s.type = 'module';
+        s.src = './assets/app.js';
+        document.body.appendChild(s);
+      }
     </script>
-    <script type="module" src="./assets/app.js"></script>
+    <script type="module" src="/src/main.tsx" onerror="loadStaticBundle()"></script>
+    <script>
+      // Fallback in case onerror is suppressed on some static hosting CDNs
+      setTimeout(function() {
+        if (!window.__appLoaded && !document.getElementById('invitation-letter')) {
+          loadStaticBundle();
+        }
+      }, 700);
+    </script>
   </body>
 </html>
 

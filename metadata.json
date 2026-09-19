@@ -2,5 +2,7 @@
   "name": "বিরল উপজেলা ছাত্রকল্যাণ সমিতি - আমন্ত্রণ পত্র",
   "description": "হাবিপ্রবি বিরল উপজেলা ছাত্রকল্যাণ সমিতির বিদায়ী সংবর্ধনা, নবীন বরণ ও বার্ষিক বনভোজন ২০২৬ এর পেশাদার ও নান্দনিক আমন্ত্রণ পত্র।",
   "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
 }

@@ -17,6 +17,7 @@ interface ActionToolbarProps {
   onThemeChange: (theme: CardTheme) => void;
   recipientName: string;
   onRecipientNameChange: (name: string) => void;
+  onOpenPrintPreview: () => void;
 }
 
 export const ActionToolbar: React.FC<ActionToolbarProps> = ({
@@ -24,6 +25,7 @@ export const ActionToolbar: React.FC<ActionToolbarProps> = ({
   onThemeChange,
   recipientName,
   onRecipientNameChange,
+  onOpenPrintPreview,
 }) => {
   const [copied, setCopied] = useState(false);
   const [isAttending, setIsAttending] = useState(false);
@@ -57,7 +59,7 @@ export const ActionToolbar: React.FC<ActionToolbarProps> = ({
 হাজী মোহাম্মদ দানেশ বিজ্ঞান ও প্রযুক্তি বিশ্ববিদ্যালয় (হাবিপ্রবি)`;
 
   const handlePrint = () => {
-    window.print();
+    onOpenPrintPreview();
   };
 
   const handleCopyText = async () => {
@@ -183,10 +185,10 @@ export const ActionToolbar: React.FC<ActionToolbarProps> = ({
           <button
             onClick={handlePrint}
             className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-3 py-2 sm:py-1.5 rounded-lg bg-amber-600 hover:bg-amber-500 text-stone-950 font-semibold text-xs sm:text-sm shadow-md transition-all active:scale-95 min-h-[38px]"
-            title="প্রিন্ট করুন বা PDF হিসেবে সংরক্ষণ করুন"
+            title="A4 লাইভ প্রিভিউ দেখে প্রিন্ট বা PDF সংরক্ষণ করুন"
           >
             <Printer className="w-4 h-4 shrink-0" />
-            <span>প্রিন্ট / PDF</span>
+            <span>A4 প্রিন্ট প্রিভিউ</span>
           </button>
 
           {/* Copy Plain Text */}
