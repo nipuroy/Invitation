@@ -33,7 +33,7 @@ export const ActionToolbar: React.FC<ActionToolbarProps> = ({
   const [isEditingName, setIsEditingName] = useState(false);
   const [shareSuccess, setShareSuccess] = useState(false);
 
-  const fullLetterText = `আসসালামু আলাইকুম / নমস্কার প্রিয় জুনিয়ররা,
+  const fullLetterText = `আসসালামু আলাইকুম / নমস্কার ও শুভেচ্ছা প্রিয় জুনিয়ররা,
 
 বিশ্ববিদ্যালয় জীবনে তোমাদের নতুন পথচলা মাত্র শুরু হয়েছে। আর এই পথচলার শুরুতেই তোমাদের সঙ্গে একটু পরিচিত হওয়া, একসঙ্গে সময় কাটানো এবং সুন্দর কিছু স্মৃতি তৈরি করার সুযোগ করে দিতে বিরল উপজেলা ছাত্রকল্যাণ সমিতি, হাবিপ্রবি আয়োজন করতে যাচ্ছে—
 🎉 বিরল উপজেলার শিক্ষার্থীদের বিদায়ী সংবর্ধনা, নবীন বরণ ও বার্ষিক বনভোজন–২০২৬!

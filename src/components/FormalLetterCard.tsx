@@ -179,9 +179,9 @@ export const FormalLetterCard: React.FC<FormalLetterCardProps> = ({
         {/* ================= FORMAL LETTER BODY ================= */}
         <main className="relative z-10 text-stone-800 font-serif-bn px-1 sm:px-2 text-left sm:text-justify leading-relaxed">
           {/* Formal Salutation */}
-          <div className="mb-1.5 flex items-baseline gap-2">
+          <div className="mb-1.5 flex items-baseline gap-1.5 flex-wrap">
             <p className="text-xs sm:text-sm font-bold text-stone-900 border-l-3 border-amber-600 pl-2 py-0.2">
-              আসসালামু আলাইকুম / আদাব ও শুভেচ্ছা,
+              আসসালামু আলাইকুম / নমস্কার ও শুভেচ্ছা
             </p>
             <p className={`text-xs sm:text-sm font-extrabold ${themeStyles.primaryText} font-serif-bn`}>
               {recipientName ? recipientName : 'প্রিয় জুনিয়ররা'},
