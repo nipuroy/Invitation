@@ -1,0 +1,47 @@
+@import "tailwindcss";
+
+@layer utilities {
+  .font-serif-bn {
+    font-family: 'Noto Serif Bengali', 'Tiro Bangla', serif;
+  }
+  .font-sans-bn {
+    font-family: 'Hind Siliguri', 'Anek Bangla', sans-serif;
+  }
+  .font-display-bn {
+    font-family: 'Tiro Bangla', 'Noto Serif Bengali', serif;
+  }
+}
+
+/* Watermark and textured paper effects */
+.bg-parchment-pattern {
+  background-color: #fdfbf7;
+  background-image: radial-gradient(#d4af37 0.75px, transparent 0.75px), radial-gradient(#d4af37 0.75px, #fdfbf7 0.75px);
+  background-size: 30px 30px;
+  background-position: 0 0, 15px 15px;
+  background-opacity: 0.05;
+}
+
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 6mm;
+  }
+  body {
+    background: #ffffff !important;
+    color: #1c1917 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+  .print-container {
+    box-shadow: none !important;
+    margin: 0 !important;
+    padding: 1.5rem !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+}
