@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite --port=3000 --host=0.0.0.0",
     "start": "vite --port=3000 --host=0.0.0.0",
-    "build": "vite build && node -e \"const fs = require('fs'); fs.cpSync('dist', 'docs', {recursive: true});\"",
+    "build": "vite build && node -e \"const fs = require('fs'); fs.cpSync('dist', 'docs', {recursive: true}); const files = fs.readdirSync('dist/assets'); const js = files.find(f => f.endsWith('.js')); const css = files.find(f => f.endsWith('.css')); if (!fs.existsSync('assets')) fs.mkdirSync('assets'); if (js) fs.copyFileSync('dist/assets/' + js, 'assets/app.js'); if (css) fs.copyFileSync('dist/assets/' + css, 'assets/app.css');\"",
     "preview": "vite preview --port=3000 --host=0.0.0.0",
     "clean": "rm -rf dist server.js",
     "lint": "tsc --noEmit"
