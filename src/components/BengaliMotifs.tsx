@@ -150,7 +150,11 @@ export const AssociationCrest: React.FC<{ color?: string; size?: number; classNa
 };
 
 // Traditional Wax / Official Rubber Stamp (অফিসিয়াল সিলমোহর)
-export const OfficialSealStamp: React.FC<{ theme: string }> = ({ theme }) => {
+export const OfficialSealStamp: React.FC<{ theme: string; size?: 'sm' | 'md' | 'lg'; className?: string }> = ({
+  theme,
+  size = 'md',
+  className = '',
+}) => {
   const colorMap = {
     maroon: {
       border: 'border-rose-900/60',
@@ -177,22 +181,28 @@ export const OfficialSealStamp: React.FC<{ theme: string }> = ({ theme }) => {
     star: 'text-amber-700',
   };
 
+  const sizeClasses = {
+    sm: 'w-20 h-20 p-0.5',
+    md: 'w-24 h-24 sm:w-28 sm:h-28 p-1',
+    lg: 'w-32 h-32 p-1.5',
+  }[size];
+
   return (
     <div
-      className={`w-28 h-28 rounded-full border-2 border-dashed ${colorMap.border} ${colorMap.bg} p-1 flex flex-col items-center justify-center text-center transform -rotate-6 select-none shadow-xs pointer-events-none transition-transform hover:rotate-0`}
+      className={`${sizeClasses} rounded-full border-2 border-dashed ${colorMap.border} ${colorMap.bg} flex flex-col items-center justify-center text-center transform -rotate-6 select-none shadow-xs pointer-events-none transition-transform hover:rotate-0 ${className}`}
     >
-      <div className={`w-full h-full rounded-full border border-double ${colorMap.border} flex flex-col items-center justify-center p-1 font-serif-bn leading-tight`}>
-        <span className={`text-[8.5px] font-bold uppercase tracking-wider ${colorMap.text}`}>
+      <div className={`w-full h-full rounded-full border border-double ${colorMap.border} flex flex-col items-center justify-center p-0.5 font-serif-bn leading-tight`}>
+        <span className={`text-[7.5px] sm:text-[8.5px] font-bold uppercase tracking-wider ${colorMap.text}`}>
           বিরল উপজেলা
         </span>
-        <div className="w-5 h-[1px] bg-amber-700 my-0.5 opacity-60"></div>
-        <span className={`text-[9.5px] font-extrabold ${colorMap.text}`}>
+        <div className="w-4 sm:w-5 h-[1px] bg-amber-700 my-0.5 opacity-60"></div>
+        <span className={`text-[8.5px] sm:text-[9.5px] font-extrabold ${colorMap.text}`}>
           ছাত্রকল্যাণ সমিতি
         </span>
-        <span className="text-[7.5px] font-medium text-stone-600">
+        <span className="text-[6.5px] sm:text-[7.5px] font-medium text-stone-600">
           হাবিপ্রবি, দিনাজপুর
         </span>
-        <div className="flex items-center gap-0.5 mt-0.5 text-amber-700 text-[8px]">
+        <div className="flex items-center gap-0.5 mt-0.5 text-amber-700 text-[7px] sm:text-[8px]">
           ★ ২০২৬ ★
         </div>
       </div>
