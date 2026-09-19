@@ -8,9 +8,12 @@ import {
   UserCheck,
   Share2,
   Edit3,
+  Image as ImageIcon,
+  Loader2,
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { CardTheme } from '../types';
+import { downloadElementAsPng } from '../utils/exportImage';
 
 interface ActionToolbarProps {
   theme: CardTheme;
@@ -32,6 +35,8 @@ export const ActionToolbar: React.FC<ActionToolbarProps> = ({
   const [attendanceCount, setAttendanceCount] = useState(148);
   const [isEditingName, setIsEditingName] = useState(false);
   const [shareSuccess, setShareSuccess] = useState(false);
+  const [isExportingImage, setIsExportingImage] = useState(false);
+  const [imageSuccess, setImageSuccess] = useState(false);
 
   const fullLetterText = `আসসালামু আলাইকুম / নমস্কার ও শুভেচ্ছা প্রিয় জুনিয়ররা,
 
@@ -45,13 +50,17 @@ export const ActionToolbar: React.FC<ActionToolbarProps> = ({
 ⏰ সময়: দুপুর ২:৩০ মিনিট
 📍 স্থান: গ্যালারি রুম, ড. কুদরত-ই-খুদা ভবন, হাবিপ্রবি
 
-🍽️ খাবারের মেনু:
-পোলাও • রোস্ট • ডিম • বুটের ডাল • সালাদ • মোজো
+✨ আয়োজনের বিশেষ আকর্ষণ ও কর্মসূচি:
+• বরণডালা ও নবীন অনুজদের শুভেচ্ছা স্মারক প্রদান
+• বিদায়ী সিনিয়র ব্যাচের সম্মাননা ও স্মৃতিচারণ
+• উন্মুক্ত আড্ডা, গান ও সাংস্কৃতিক পর্ব
+• স্মরণীয় ফটোসেশন ও গ্র্যান্ড গেট-টুগেদার
+• প্রীতিভোজ ও মধ্যাহ্ন আপ্যায়ন
 
-তোমরা নতুন, তাই প্রথমদিকে অনেককিছুই হয়তো অপরিচিত লাগবে। আমরা চাই, বিরল উপজেলার বড় ভাই-বোনদের সঙ্গে তোমাদের একটা সুন্দর সম্পর্কের শুরু হোক এই আয়োজন থেকেই। ❤️
-তাই সবাই সময়মতো চলে আসবে।
+তোমরা নতুন, তাই প্রথমদিকে অনেককিছুই হয়তো অপরিচিত লাগবে। আমরা চাই, বিরল উপজেলার বড় ভাই-বোনদের সঙ্গে তোমাদের একটি সুদৃঢ় ও পারিবারিক সম্পর্কের মেলবন্ধন তৈরি হোক এই আয়োজন থেকেই। ❤️
+তাই পরিবারের অনুজ সদস্য হিসেবে সবাই যথাসময়ে অনুষ্ঠানে উপস্থিত হয়ে আমাদের আয়োজনকে সার্থক করবে।
 
-দেখা হবে অনুষ্ঠানে, জুনিয়ররা! 🫶
+দেখা হবে অনুষ্ঠানে, প্রিয় জুনিয়ররা! 🫶
 
 সস্নেহে,
 তোমাদের Immediate Senior
@@ -60,6 +69,29 @@ export const ActionToolbar: React.FC<ActionToolbarProps> = ({
 
   const handlePrint = () => {
     onOpenPrintPreview();
+  };
+
+  const handleDownloadImage = async () => {
+    if (isExportingImage) return;
+    setIsExportingImage(true);
+    try {
+      const ok = await downloadElementAsPng(
+        'invitation-letter',
+        'Birol-Upazila-Chhatra-Kalyan-Samiti-Invitation-2026.png'
+      );
+      if (ok) {
+        setImageSuccess(true);
+        confetti({
+          particleCount: 50,
+          spread: 60,
+          origin: { y: 0.6 },
+          colors: ['#7a1820', '#d4af37', '#047857'],
+        });
+        setTimeout(() => setImageSuccess(false), 2500);
+      }
+    } finally {
+      setIsExportingImage(false);
+    }
   };
 
   const handleCopyText = async () => {
@@ -118,14 +150,14 @@ export const ActionToolbar: React.FC<ActionToolbarProps> = ({
     if (navigator.share) {
       try {
         await navigator.share({
-          title: 'বিরল উপজেলা ছাত্রকল্যাণ সমিতি - আমন্ত্রণ পত্র ২০২৬',
-          text: 'বিদায়ী সংবর্ধনা, নবীন বরণ ও বার্ষিক বনভোজন–২০২৬ এ আপনার সানন্দ উপস্থিতি কাম্য।',
+          title: 'বিরল উপজেলা ছাত্রকল্যাণ সমিতি - আমন্ত্রণ পত্র',
+          text: fullLetterText,
           url: window.location.href,
         });
         setShareSuccess(true);
         setTimeout(() => setShareSuccess(false), 2000);
       } catch {
-        // User cancelled or unsupported
+        // Share cancelled or failed
       }
     } else {
       handleCopyText();
@@ -181,6 +213,35 @@ export const ActionToolbar: React.FC<ActionToolbarProps> = ({
 
         {/* Action Buttons */}
         <div className="flex flex-wrap items-center justify-center sm:justify-end gap-1.5 sm:gap-2">
+          {/* Download Image (PNG / Pic Output) */}
+          <button
+            onClick={handleDownloadImage}
+            disabled={isExportingImage}
+            className={`flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-3 py-2 sm:py-1.5 rounded-lg font-semibold text-xs sm:text-sm border transition-all active:scale-95 min-h-[38px] ${
+              imageSuccess
+                ? 'bg-emerald-600 text-white border-emerald-400'
+                : 'bg-stone-700 hover:bg-stone-600 text-amber-300 border-stone-600'
+            }`}
+            title="আমন্ত্রণ পত্রটি সরাসরি HD ছবি (PNG) হিসেবে সেভ করুন"
+          >
+            {isExportingImage ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin text-amber-400 shrink-0" />
+                <span>ছবি প্রসেস হচ্ছে...</span>
+              </>
+            ) : imageSuccess ? (
+              <>
+                <Check className="w-4 h-4 text-white shrink-0" />
+                <span className="text-white">ছবি সেভ হয়েছে!</span>
+              </>
+            ) : (
+              <>
+                <ImageIcon className="w-4 h-4 text-amber-400 shrink-0" />
+                <span>ছবি ডাউনলোড (PNG)</span>
+              </>
+            )}
+          </button>
+
           {/* Print / Save PDF */}
           <button
             onClick={handlePrint}

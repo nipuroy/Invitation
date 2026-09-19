@@ -8,12 +8,15 @@ import {
   Check,
   Palette,
   FileText,
-  Sliders,
   Sparkles,
   Info,
+  Download,
+  Image as ImageIcon,
+  Loader2,
 } from 'lucide-react';
 import { CardTheme } from '../types';
 import { FormalLetterCard } from './FormalLetterCard';
+import { downloadElementAsPng } from '../utils/exportImage';
 
 interface PrintPreviewModalProps {
   isOpen: boolean;
@@ -34,7 +37,8 @@ export const PrintPreviewModal: React.FC<PrintPreviewModalProps> = ({
 }) => {
   const [scale, setScale] = useState<number>(0.85);
   const [showCropMarks, setShowCropMarks] = useState<boolean>(true);
-  const [activeTab, setActiveTab] = useState<'preview' | 'guide'>('preview');
+  const [isExportingImage, setIsExportingImage] = useState<boolean>(false);
+  const [imageExportSuccess, setImageExportSuccess] = useState<boolean>(false);
 
   // Themes list for in-modal quick switcher
   const themesList: { id: CardTheme; name: string; color: string }[] = [
@@ -63,7 +67,7 @@ export const PrintPreviewModal: React.FC<PrintPreviewModalProps> = ({
     return () => window.removeEventListener('resize', calculateScale);
   }, [isOpen]);
 
-  // Handle ESC key to close modal
+  // Handle ESC key to close modal & shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && isOpen) {
@@ -90,6 +94,23 @@ export const PrintPreviewModal: React.FC<PrintPreviewModalProps> = ({
 
   const handleTriggerPrint = () => {
     window.print();
+  };
+
+  const handleDownloadImage = async () => {
+    if (isExportingImage) return;
+    setIsExportingImage(true);
+    try {
+      const success = await downloadElementAsPng(
+        'invitation-letter',
+        `Birol-Upazila-Chhatra-Kalyan-Samiti-Invitation-2026.png`
+      );
+      if (success) {
+        setImageExportSuccess(true);
+        setTimeout(() => setImageExportSuccess(false), 3000);
+      }
+    } finally {
+      setIsExportingImage(false);
+    }
   };
 
   const handleZoomIn = () => {
@@ -121,14 +142,14 @@ export const PrintPreviewModal: React.FC<PrintPreviewModalProps> = ({
           <div className="truncate">
             <div className="flex items-center gap-2">
               <h2 className="font-serif-bn font-bold text-white text-sm sm:text-base tracking-wide truncate">
-                লাইভ A4 প্রিন্ট প্রিভিউ
+                লাইভ A4 প্রিন্ট ও ছবি প্রিভিউ
               </h2>
               <span className="hidden md:inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
                 A4 (২১০ × ২৯৭ মিমি)
               </span>
             </div>
             <p className="text-[11px] text-stone-400 font-sans-bn truncate hidden xs:block">
-              প্রিন্ট বা PDF সংরক্ষণের আগে ডকুমেন্টের মূল লেআউট মিলিয়ে নিন
+              সম্পূর্ণ A4 পেজ অনুযায়ী লেআউট মিলিয়ে নিন এবং সরাসরি প্রিন্ট বা HD ছবি ডাউনলোড করুন
             </p>
           </div>
         </div>
@@ -163,6 +184,35 @@ export const PrintPreviewModal: React.FC<PrintPreviewModalProps> = ({
             </button>
           </div>
 
+          {/* Download Image CTA */}
+          <button
+            onClick={handleDownloadImage}
+            disabled={isExportingImage}
+            className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-lg font-semibold text-xs sm:text-sm border transition-all active:scale-95 ${
+              imageExportSuccess
+                ? 'bg-emerald-600 text-white border-emerald-400'
+                : 'bg-stone-800 hover:bg-stone-700 text-amber-300 border-stone-700'
+            }`}
+            title="HD ছবি (PNG) হিসেবে সেভ করুন"
+          >
+            {isExportingImage ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin text-amber-400" />
+                <span className="font-sans-bn">ছবি তৈরি হচ্ছে...</span>
+              </>
+            ) : imageExportSuccess ? (
+              <>
+                <Check className="w-4 h-4 text-white" />
+                <span className="font-sans-bn">ছবি সেভ হয়েছে!</span>
+              </>
+            ) : (
+              <>
+                <ImageIcon className="w-4 h-4 text-amber-400" />
+                <span className="font-sans-bn">ছবি ডাউনলোড</span>
+              </>
+            )}
+          </button>
+
           {/* Quick Print CTA */}
           <button
             onClick={handleTriggerPrint}
@@ -170,7 +220,7 @@ export const PrintPreviewModal: React.FC<PrintPreviewModalProps> = ({
             title="ব্রাউজার প্রিন্ট ডায়ালগ ওপেন করুন (Ctrl+P)"
           >
             <Printer className="w-4 h-4" />
-            <span className="font-sans-bn font-bold">প্রিন্ট / PDF তৈরি</span>
+            <span className="font-sans-bn font-bold">প্রিন্ট / PDF</span>
           </button>
 
           {/* Close Modal */}
@@ -217,7 +267,7 @@ export const PrintPreviewModal: React.FC<PrintPreviewModalProps> = ({
               onChange={(e) => setShowCropMarks(e.target.checked)}
               className="rounded bg-stone-800 border-stone-700 text-amber-500 focus:ring-0 w-3.5 h-3.5"
             />
-            <span className="text-[11px]">প্রিন্ট মার্জিন গাইড</span>
+            <span className="text-[11px]">A4 পেজ বাউন্ডারি গাইড</span>
           </label>
           <span className="text-stone-600">|</span>
           <span className="text-[11px] text-amber-400/90 font-mono hidden sm:inline">
@@ -229,11 +279,6 @@ export const PrintPreviewModal: React.FC<PrintPreviewModalProps> = ({
       {/* Main Canvas Area: Virtual A4 Sheet */}
       <div
         className="flex-1 overflow-auto p-4 sm:p-8 flex items-start justify-center relative bg-radial from-stone-900/40 to-stone-950/90"
-        onClick={(e) => {
-          if (e.target === e.currentTarget) {
-            // Click outside sheet closes or focus
-          }
-        }}
       >
         <div
           style={{
@@ -243,18 +288,21 @@ export const PrintPreviewModal: React.FC<PrintPreviewModalProps> = ({
           }}
           className="relative shrink-0 select-text"
         >
-          {/* Simulated A4 Paper Sheet */}
+          {/* Simulated A4 Paper Sheet (Exact 210 x 297 mm proportion) */}
           <div
-            className={`relative bg-white text-stone-900 rounded-sm shadow-2xl transition-all ${
-              showCropMarks ? 'ring-1 ring-amber-500/40' : 'ring-1 ring-black/20'
+            className={`relative bg-[#fdfbf7] text-stone-900 rounded-sm shadow-2xl transition-all ${
+              showCropMarks ? 'ring-2 ring-amber-500/50' : 'ring-1 ring-black/20'
             }`}
             style={{
-              width: '794px', // 210mm at ~96dpi = ~794px standard screen representation
+              width: '794px', // 210mm at ~96dpi = ~794px
               minHeight: '1123px', // 297mm at ~96dpi = ~1123px
               boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.05)',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between',
             }}
           >
-            {/* Corner Crop Marks (Optional visual helper) */}
+            {/* Corner Crop Marks (Visual guide) */}
             {showCropMarks && (
               <>
                 {/* Top-Left Crop Mark */}
@@ -271,19 +319,13 @@ export const PrintPreviewModal: React.FC<PrintPreviewModalProps> = ({
               </>
             )}
 
-            {/* The Live Rendered Card Component */}
-            <div className="p-4 sm:p-6 bg-[#fdfbf7]">
+            {/* The Live Rendered Card Component spanning full A4 page */}
+            <div className="w-full flex-1 flex flex-col justify-between">
               <FormalLetterCard
                 theme={theme}
                 recipientName={recipientName}
                 memoNumber={memoNumber}
               />
-            </div>
-
-            {/* Simulated Page Footer Marker */}
-            <div className="absolute bottom-2 left-0 right-0 flex items-center justify-between px-8 text-[10px] text-stone-400 font-mono pointer-events-none opacity-60">
-              <span>বিরল উপজেলা ছাত্রকল্যাণ সমিতি, হাবিপ্রবি</span>
-              <span>পৃষ্ঠা ১ / ১ • A4 Portrait (210×297mm)</span>
             </div>
           </div>
         </div>
@@ -294,20 +336,33 @@ export const PrintPreviewModal: React.FC<PrintPreviewModalProps> = ({
         <div className="flex items-center gap-2 text-stone-400 font-sans-bn">
           <Info className="w-4 h-4 text-amber-400 shrink-0" />
           <span>
-            <strong className="text-white">প্রিন্ট পরামর্শ:</strong> ব্রাউজারের প্রিন্ট ডায়ালগে{' '}
-            <strong className="text-amber-300">"Destination"</strong> এ{' '}
-            <em className="text-stone-200">Save as PDF</em> এবং{' '}
-            <strong className="text-amber-300">"Background graphics"</strong> অন রাখুন।
+            <strong className="text-white">প্রিন্ট ও ছবি নির্দেশিকা:</strong> সম্পূর্ণ A4 সাইজে ১টি সিঙ্গেল পেজে প্রিন্ট করতে ডায়ালগে{' '}
+            <strong className="text-amber-300">"Background graphics"</strong> অন রাখুন। অথবা{' '}
+            <strong className="text-amber-300">"ছবি ডাউনলোড"</strong> বাটনে ক্লিক করে সোশ্যাল মিডিয়ায় শেয়ারের উপযোগী HD ছবি সংগ্রহ করুন।
           </span>
         </div>
 
         <div className="flex items-center gap-2">
           <button
+            onClick={handleDownloadImage}
+            disabled={isExportingImage}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-stone-800 hover:bg-stone-700 text-amber-300 font-medium text-xs font-sans-bn transition-colors border border-stone-700"
+          >
+            {isExportingImage ? (
+              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+            ) : (
+              <Download className="w-3.5 h-3.5" />
+            )}
+            <span>{isExportingImage ? 'ছবি প্রসেস হচ্ছে...' : 'ছবি ডাউনলোড (PNG)'}</span>
+          </button>
+
+          <button
             onClick={onClose}
             className="px-3 py-1.5 rounded-md bg-stone-800 hover:bg-stone-700 text-stone-300 text-xs font-sans-bn transition-colors"
           >
-            ফিরে যান
+            বন্ধ করুন
           </button>
+
           <button
             onClick={handleTriggerPrint}
             className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-md bg-amber-500 hover:bg-amber-400 text-stone-950 font-semibold text-xs transition-all shadow"
