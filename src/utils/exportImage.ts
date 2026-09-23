@@ -14,12 +14,23 @@ export async function downloadElementAsPng(
   }
 
   try {
-    // Generate high-resolution PNG (pixelRatio: 2 for sharp print-quality imagery)
+    // Generate high-resolution PNG with exact scroll dimensions so bottom is never truncated
+    const rect = node.getBoundingClientRect();
+    const width = Math.ceil(node.scrollWidth || rect.width);
+    const height = Math.ceil(node.scrollHeight || rect.height);
+
     const dataUrl = await toPng(node, {
       quality: 0.98,
       pixelRatio: 2,
+      canvasWidth: width * 2,
+      canvasHeight: height * 2,
       cacheBust: true,
       backgroundColor: '#fdfbf7',
+      style: {
+        transform: 'none',
+        margin: '0',
+        maxHeight: 'none',
+      },
       filter: (domNode) => {
         // Exclude elements with 'no-print' or 'no-export' class
         if (domNode instanceof HTMLElement && domNode.classList.contains('no-export')) {

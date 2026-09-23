@@ -47,19 +47,24 @@ export const PrintPreviewModal: React.FC<PrintPreviewModalProps> = ({
     { id: 'navy', name: 'অভিজাত নীল', color: 'bg-[#1e3a8a]' },
   ];
 
-  // Adjust default scale based on window size
+  // Adjust default scale based on window size so the entire A4 sheet fits comfortably
   useEffect(() => {
     if (!isOpen) return;
 
     const calculateScale = () => {
       const width = window.innerWidth;
-      if (width < 640) {
-        setScale(0.48);
-      } else if (width < 1024) {
-        setScale(0.7);
-      } else {
-        setScale(0.85);
-      }
+      const height = window.innerHeight;
+      // Available height inside modal canvas: height - (header 64px + subbar 40px + footer 52px + margins 50px)
+      const availableHeight = Math.max(height - 210, 300);
+      const availableWidth = Math.max(width - 48, 300);
+
+      const fitHeightScale = availableHeight / 1123;
+      const fitWidthScale = availableWidth / 794;
+
+      // Fit whole page on screen by default
+      const fitScale = Math.min(fitHeightScale, fitWidthScale);
+      const optimalScale = Math.min(Math.max(Number(fitScale.toFixed(2)), 0.38), 0.85);
+      setScale(optimalScale);
     };
 
     calculateScale();
@@ -123,9 +128,14 @@ export const PrintPreviewModal: React.FC<PrintPreviewModalProps> = ({
 
   const handleResetZoom = () => {
     const width = window.innerWidth;
-    if (width < 640) setScale(0.48);
-    else if (width < 1024) setScale(0.7);
-    else setScale(0.85);
+    const height = window.innerHeight;
+    const availableHeight = Math.max(height - 210, 300);
+    const availableWidth = Math.max(width - 48, 300);
+    const fitHeightScale = availableHeight / 1123;
+    const fitWidthScale = availableWidth / 794;
+    const fitScale = Math.min(fitHeightScale, fitWidthScale);
+    const optimalScale = Math.min(Math.max(Number(fitScale.toFixed(2)), 0.38), 0.85);
+    setScale(optimalScale);
   };
 
   return (
@@ -278,13 +288,14 @@ export const PrintPreviewModal: React.FC<PrintPreviewModalProps> = ({
 
       {/* Main Canvas Area: Virtual A4 Sheet */}
       <div
-        className="flex-1 overflow-auto p-4 sm:p-8 flex items-start justify-center relative bg-radial from-stone-900/40 to-stone-950/90"
+        className="flex-1 overflow-y-auto overflow-x-auto p-4 sm:p-6 pb-28 sm:pb-36 flex items-start justify-center relative bg-radial from-stone-900/40 to-stone-950/90"
       >
         <div
           style={{
-            transform: `scale(${scale})`,
-            transformOrigin: 'top center',
-            transition: 'transform 0.15s ease-out',
+            width: `${794 * scale}px`,
+            minHeight: `${1123 * scale}px`,
+            transition: 'width 0.15s ease-out, min-height 0.15s ease-out',
+            marginBottom: '48px',
           }}
           className="relative shrink-0 select-text"
         >
@@ -296,6 +307,8 @@ export const PrintPreviewModal: React.FC<PrintPreviewModalProps> = ({
             style={{
               width: '794px', // 210mm at ~96dpi = ~794px
               minHeight: '1123px', // 297mm at ~96dpi = ~1123px
+              transform: `scale(${scale})`,
+              transformOrigin: 'top left',
               boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.05)',
               display: 'flex',
               flexDirection: 'column',
@@ -322,6 +335,7 @@ export const PrintPreviewModal: React.FC<PrintPreviewModalProps> = ({
             {/* The Live Rendered Card Component spanning full A4 page */}
             <div className="w-full flex-1 flex flex-col justify-between">
               <FormalLetterCard
+                id="modal-invitation-letter"
                 theme={theme}
                 recipientName={recipientName}
                 memoNumber={memoNumber}
